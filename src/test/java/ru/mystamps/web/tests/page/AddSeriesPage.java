@@ -79,7 +79,7 @@ public class AddSeriesPage extends AbstractPageWithForm {
 				inputField("gibbonsNumbers").withLabel(tr("t_sg")),
 				inputField("gibbonsPrice"),
 				textareaField("comment").withLabel(tr("t_comment")).accessibleByAll(false),
-				required(uploadFileField("image").withLabel(tr("t_image")))
+				uploadFileField("image").withLabel(tr("t_image"))
 			)
 			.and()
 			.with(submitButton(tr("t_add")))

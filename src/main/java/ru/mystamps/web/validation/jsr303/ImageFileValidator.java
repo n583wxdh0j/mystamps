@@ -24,6 +24,8 @@ import java.util.Arrays;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +106,10 @@ public class ImageFileValidator implements ConstraintValidator<ImageFile, Multip
 	public boolean isValid(MultipartFile file, ConstraintValidatorContext ctx) {
 		
 		if (file == null) {
+			return true;
+		}
+		
+		if (StringUtils.isEmpty(file.getOriginalFilename())) {
 			return true;
 		}
 		

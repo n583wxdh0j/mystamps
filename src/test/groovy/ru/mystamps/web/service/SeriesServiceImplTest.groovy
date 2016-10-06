@@ -73,6 +73,8 @@ class SeriesServiceImplTest extends Specification {
 			yvertCatalogService,
 			gibbonsCatalogService
 		)
+		
+		multipartFile.getOriginalFilename() >> '/path/to/test/file.ext'
 	}
 	
 	//

@@ -25,7 +25,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.hibernate.validator.constraints.Range;
+import org.hibernate.validator.constraints.URL;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +44,6 @@ import ru.mystamps.web.validation.jsr303.ImageFile;
 import ru.mystamps.web.validation.jsr303.MaxFileSize;
 import ru.mystamps.web.validation.jsr303.MaxFileSize.Unit;
 import ru.mystamps.web.validation.jsr303.NotEmptyFile;
-import ru.mystamps.web.validation.jsr303.NotEmptyFilename;
 import ru.mystamps.web.validation.jsr303.NotNullIfFirstField;
 import ru.mystamps.web.validation.jsr303.Price;
 import ru.mystamps.web.validation.jsr303.ReleaseDateIsNotInFuture;
@@ -56,6 +58,9 @@ import static ru.mystamps.web.validation.ValidationRules.MIN_STAMPS_IN_SERIES;
 
 @Getter
 @Setter
+// TODO: image and downloadedImage should be filled together
+// TODO: localize URL
+// TODO: disallow urls like http://test
 // TODO: combine price with currency to separate class
 @SuppressWarnings({"PMD.TooManyFields", "PMD.AvoidDuplicateLiterals"})
 @NotNullIfFirstField.List({
@@ -128,13 +133,32 @@ public class AddSeriesForm implements AddSeriesDto {
 	@Size(max = MAX_SERIES_COMMENT_LENGTH, message = "{value.too-long}")
 	private String comment;
 	
-	@NotNull
-	@NotEmptyFilename(groups = Image1Checks.class)
+	//@NotEmptyFilename(groups = Image1Checks.class)
 	@NotEmptyFile(groups = Image2Checks.class)
 	@MaxFileSize(value = MAX_IMAGE_SIZE, unit = Unit.Kbytes, groups = Image3Checks.class)
 	@ImageFile(groups = Image3Checks.class)
 	private MultipartFile image;
 	
+	// Name of this field must match with the field name that
+	// is being inspected by DownloadImageInterceptor
+	@URL(protocol = "http")
+	private String imageUrl;
+	
+	// This field holds a file that was downloaded from imageUrl
+	//@NotEmptyFilename(groups = Image1Checks.class)
+	@NotEmptyFile(groups = Image2Checks.class)
+	@MaxFileSize(value = MAX_IMAGE_SIZE, unit = Unit.Kbytes, groups = Image3Checks.class)
+	@ImageFile(groups = Image3Checks.class)
+	private MultipartFile downloadedImage;
+	
+	@Override
+	public MultipartFile getImage() {
+		if (image != null && StringUtils.isNotEmpty(image.getOriginalFilename())) {
+			return image;
+		}
+		
+		return downloadedImage;
+	}
 	
 	@GroupSequence({
 		ReleaseDate1Checks.class,
