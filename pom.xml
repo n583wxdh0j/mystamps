@@ -11,15 +11,15 @@
 	<dependencies>
 		
 		<dependency>
-			<groupId>com.github.heneke.thymeleaf</groupId>
-			<artifactId>thymeleaf-extras-togglz</artifactId>
-			<version>${thymeleaf.togglz.version}</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>${javax.validation.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.heneke.thymeleaf</groupId>
+			<artifactId>thymeleaf-extras-togglz</artifactId>
+			<version>${thymeleaf.togglz.version}</version>
 		</dependency>
 		
 		<dependency>
