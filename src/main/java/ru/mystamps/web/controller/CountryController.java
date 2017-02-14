@@ -17,12 +17,12 @@
  */
 package ru.mystamps.web.controller;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
