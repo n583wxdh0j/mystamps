@@ -14,7 +14,7 @@ Anonymous user cannot create series
 
 Opening a page of non-existing series show an error
 	[Documentation]         Verify that access to non-existing series returns 404 error
-	Go To                   ${SITE_URL}/series/999
+	Go To                   ${SITE_URL}/series/1
 	Element Text Should Be  id=error-code  404
 	Element Text Should Be  id=error-msg  Requested page${\n}not found
 
