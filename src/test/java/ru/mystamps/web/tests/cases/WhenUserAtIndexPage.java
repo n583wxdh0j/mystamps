@@ -75,7 +75,7 @@ public class WhenUserAtIndexPage extends WhenAnyUserAtAnyPage<IndexSitePage> {
 	public void shouldExistsLinkForListingCategories() {
 		assertThat(page.linkWithLabelExists(tr("t_show_categories_list")))
 			.overridingErrorMessage("should exists link to page for listing categories")
-			.isTrue();
+			.isFalse();
 	}
 	
 	@Test(groups = "misc")
