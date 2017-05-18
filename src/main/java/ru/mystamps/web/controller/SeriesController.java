@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.groups.Default;
@@ -59,6 +60,7 @@ import ru.mystamps.web.Url;
 import ru.mystamps.web.controller.converter.annotation.Category;
 import ru.mystamps.web.controller.converter.annotation.Country;
 import ru.mystamps.web.controller.converter.annotation.CurrentUser;
+import ru.mystamps.web.controller.interceptor.DownloadImageInterceptor;
 import ru.mystamps.web.dao.dto.EntityWithIdDto;
 import ru.mystamps.web.dao.dto.LinkEntityDto;
 import ru.mystamps.web.dao.dto.PurchaseAndSaleDto;
@@ -184,7 +186,16 @@ public class SeriesController {
 		BindingResult result,
 		@CurrentUser Integer currentUserId,
 		Locale userLocale,
-		Model model) {
+		Model model,
+		HttpServletRequest request) {
+		
+		Object downloadedFileError =
+			request.getAttribute(DownloadImageInterceptor.ERROR_MESSAGE_ATTR_NAME);
+		if (downloadedFileError instanceof String) {
+			String downloadedFileErrorMessage = (String)downloadedFileError;
+			result.rejectValue("downloadedImage", "fixme", downloadedFileErrorMessage);
+			request.removeAttribute(DownloadImageInterceptor.ERROR_MESSAGE_ATTR_NAME);
+		}
 		
 		if (result.hasErrors()) {
 			String lang = LocaleUtils.getLanguageOrNull(userLocale);

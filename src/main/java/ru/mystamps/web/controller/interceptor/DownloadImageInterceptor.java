@@ -46,6 +46,9 @@ import lombok.RequiredArgsConstructor;
 
 // TODO: javadoc
 public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
+	
+	public static final String ERROR_MESSAGE_ATTR_NAME = "DownloadedImage.ErrorMessage";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(DownloadImageInterceptor.class);
 	
 	@Override
@@ -90,6 +93,7 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 		// Doing this our validation will be able to check downloaded file later.
 		
 		byte[] data;
+		String contentType;
 		try {
 			URL url = new URL(imageUrl);
 			LOG.debug("URL.getPath(): {} / URL.getFile(): {}", url.getPath(), url.getFile());
@@ -97,6 +101,7 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 			if (!"http".equals(url.getProtocol())) {
 				// TODO(security): fix possible log injection
 				LOG.info("Invalid link '{}': only HTTP protocol is supported", imageUrl);
+				setErrorMessage(request, "Invalid protocol. Only HTTP protocol is supported");
 				return true;
 			}
 			
@@ -129,6 +134,7 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 				} catch (IOException ex) {
 					// TODO(security): fix possible log injection
 					LOG.error("Couldn't connect to '{}': {}", imageUrl, ex.getMessage());
+					setErrorMessage(request, "Could not connect to host");
 					return true;
 				}
 				
@@ -141,9 +147,24 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 							imageUrl,
 							status
 						);
+						setErrorMessage(request, "Invalid response code from the server. Ensure that server doesn't do a redirect");
 						return true;
 					}
 					
+					contentType = conn.getContentType();
+					LOG.debug("Content-Type: {}", contentType);
+					if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
+						// TODO(security): fix possible log injection
+						LOG.error(
+							"Couldn't download file '{}': unsupported image type '{}'",
+							imageUrl,
+							contentType
+						);
+						setErrorMessage(request, "Invalid file type. Only JPEG and PNG are supported");
+						return true;
+					}
+					
+					// TODO: content length can be -1 for gzipped responses
 					// TODO: add protection against huge files
 					int contentLength = conn.getContentLength();
 					LOG.debug("Content-Length: {}", contentLength);
@@ -154,62 +175,53 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 							imageUrl,
 							contentLength
 						);
-						return true;
-					}
-					
-					String contentType = conn.getContentType();
-					LOG.debug("Content-Type: {}", contentType);
-					if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
-						// TODO(security): fix possible log injection
-						LOG.error(
-							"Couldn't download file '{}': unsupported image type '{}'",
-							imageUrl,
-							contentType
-						);
+						setErrorMessage(request, "Invalid file size");
 						return true;
 					}
 					
 					data = StreamUtils.copyToByteArray(stream);
 					
 				} catch (FileNotFoundException ignored) {
-					// TODO: show error to user
 					// TODO(security): fix possible log injection
 					LOG.error("Couldn't download file '{}': not found", imageUrl);
-					return true;
-					
-				} catch (IOException ex) {
-					// TODO(security): fix possible log injection
-					LOG.error(
-						"Couldn't download file from URL '{}': {}",
-						imageUrl,
-						ex.getMessage()
-					);
+					setErrorMessage(request, "File not found on the server");
 					return true;
 				}
 		
 			} catch (IOException ex) {
-				LOG.error("Couldn't open connection: {}", ex.getMessage());
+				// TODO(security): fix possible log injection
+				LOG.error(
+					"Couldn't download file from URL '{}': {}",
+					imageUrl,
+					ex.getMessage()
+				);
+				setErrorMessage(request, "Could not download file");
 				return true;
 			}
 			
 		} catch (MalformedURLException ex) {
 			// TODO(security): fix possible log injection
-			// TODO: show error to user
 			LOG.error("Invalid image URL '{}': {}", imageUrl, ex.getMessage());
+			setErrorMessage(request, "Invalid URL");
 			return true;
 		}
 		
 		// TODO: use URL.getFile() instead of full link?
-		multipartRequest.getMultiFileMap().set("downloadedImage", new MyMultipartFile(data, imageUrl));
+		multipartRequest.getMultiFileMap().set("downloadedImage", new MyMultipartFile(data, contentType, imageUrl));
 		
 		// TODO: how we can validate url?
 		
 		return true;
 	}
 	
+	private static void setErrorMessage(HttpServletRequest request, String errorMessage) {
+		request.setAttribute(ERROR_MESSAGE_ATTR_NAME, errorMessage);
+	}
+	
 	@RequiredArgsConstructor
 	private static class MyMultipartFile implements MultipartFile {
 		private final byte[] content;
+		private final String contentType;
 		private final String link;
 		
 		@Override
@@ -224,7 +236,7 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 
 		@Override
 		public String getContentType() {
-			return "image/jpeg";
+			return contentType;
 		}
 
 		@Override
