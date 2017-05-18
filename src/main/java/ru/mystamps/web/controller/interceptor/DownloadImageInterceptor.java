@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
@@ -58,7 +59,7 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 		HttpServletResponse response,
 		Object handler) throws Exception {
 		
-		if (!"POST".equals(request.getMethod())) {
+		if (!HttpMethod.POST.matches(request.getMethod())) {
 			return true;
 		}
 		
