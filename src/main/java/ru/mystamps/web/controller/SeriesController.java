@@ -199,6 +199,7 @@ public class SeriesController {
 			
 			// don't try to re-display file upload field
 			form.setImage(null);
+			form.setDownloadedImage(null);
 			return null;
 		}
 		
