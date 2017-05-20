@@ -102,7 +102,6 @@ public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 			if (!"http".equals(url.getProtocol())) {
 				// TODO(security): fix possible log injection
 				LOG.info("Invalid link '{}': only HTTP protocol is supported", imageUrl);
-				setErrorMessage(request, "Invalid protocol. Only HTTP protocol is supported");
 				return true;
 			}
 			
