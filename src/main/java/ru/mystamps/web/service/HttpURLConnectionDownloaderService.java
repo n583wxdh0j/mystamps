@@ -40,6 +40,11 @@ public class HttpURLConnectionDownloaderService implements DownloaderService {
 	private static final Logger LOG =
 		LoggerFactory.getLogger(HttpURLConnectionDownloaderService.class);
 	
+	// we don't support redirects because it allows to bypass some of our validations
+	// (for example, for a protocol)
+	@SuppressWarnings({"PMD.RedundantFieldInitializer", "PMD.ImmutableField"})
+	private boolean followRedirects = false;
+	
 	@Override
 	public DownloadResult download(String fileUrl) {
 		// TODO(security): fix possible log injection
@@ -133,9 +138,8 @@ public class HttpURLConnectionDownloaderService implements DownloaderService {
 		conn.setReadTimeout(timeout);
 	}
 	
-	private static void configureRedirects(HttpURLConnection conn) {
-		// TODO: make it configurable and explain why it's bad
-		conn.setInstanceFollowRedirects(false);
+	private void configureRedirects(HttpURLConnection conn) {
+		conn.setInstanceFollowRedirects(followRedirects);
 	}
 	
 	private static Code connect(HttpURLConnection conn) {
@@ -152,9 +156,16 @@ public class HttpURLConnectionDownloaderService implements DownloaderService {
 		}
 	}
 	
-	private static Code validateConnection(HttpURLConnection conn) throws IOException {
+	private Code validateConnection(HttpURLConnection conn) throws IOException {
 		int status = conn.getResponseCode();
-		if (status != HttpURLConnection.HTTP_OK) {
+		if (status == HttpURLConnection.HTTP_MOVED_TEMP
+			|| status == HttpURLConnection.HTTP_MOVED_PERM) {
+			if (!followRedirects) {
+				LOG.debug("Couldn't download file: redirects are disallowed");
+				return Code.INVALID_REDIRECT;
+			}
+			
+		} else if (status != HttpURLConnection.HTTP_OK) {
 			LOG.debug("Couldn't download file: bad response status {}", status);
 			return Code.INVALID_RESPONSE_CODE;
 		}
