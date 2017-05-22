@@ -290,6 +290,11 @@
 							</label>
 							<div class="col-sm-5">
 								<input type="url" id="image-url" class="form-control" th:field="*{imageUrl}" />
+								<small>
+									<span class="hint-block" th:text="#{t_url_restrictions_hint}">
+										Only HTTP resources without redirect are allowed
+									</span>
+								</small>
 								<!--/*/
 								<span id="image-url.errors" class="help-block" th:if="${#fields.hasErrors('imageUrl')}" th:each="error : ${#fields.errors('imageUrl')}" th:text="${error}"></span>
 								<span id="image-url.errors" class="help-block" th:if="${#fields.hasErrors('downloadedImage')}" th:each="error : ${#fields.errors('downloadedImage')}" th:text="${error}"></span>
