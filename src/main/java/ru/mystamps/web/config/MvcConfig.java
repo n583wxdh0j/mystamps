@@ -128,8 +128,8 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(getLocaleChangeInterceptor());
 		
-		// TODO: check add series with category/country
-		registry.addInterceptor(new DownloadImageInterceptor())
+		registry
+			.addInterceptor(getDownloadImageInterceptor())
 			.addPathPatterns(Url.ADD_SERIES_PAGE);
 	}
 	
@@ -152,6 +152,10 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("lang");
 		return interceptor;
+	}
+	
+	private HandlerInterceptor getDownloadImageInterceptor() {
+		return new DownloadImageInterceptor(servicesConfig.getDownloaderService());
 	}
 	
 }

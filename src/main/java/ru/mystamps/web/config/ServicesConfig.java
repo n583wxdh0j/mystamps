@@ -77,6 +77,11 @@ public class ServicesConfig {
 	}
 	
 	@Bean
+	public DownloaderService getDownloaderService() {
+		return new HttpURLConnectionDownloaderService();
+	}
+	
+	@Bean
 	public ImageService getImageService() {
 		return new ImageServiceImpl(
 			strategiesConfig.getImagePersistenceStrategy(),

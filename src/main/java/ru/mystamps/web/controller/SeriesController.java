@@ -74,6 +74,7 @@ import ru.mystamps.web.service.CountryService;
 import ru.mystamps.web.service.SeriesSalesService;
 import ru.mystamps.web.service.SeriesService;
 import ru.mystamps.web.service.TransactionParticipantService;
+import ru.mystamps.web.service.dto.DownloadResult;
 import ru.mystamps.web.service.dto.FirstLevelCategoryDto;
 import ru.mystamps.web.service.dto.SeriesDto;
 import ru.mystamps.web.support.spring.security.Authority;
@@ -189,12 +190,21 @@ public class SeriesController {
 		Model model,
 		HttpServletRequest request) {
 		
-		Object downloadedFileError =
-			request.getAttribute(DownloadImageInterceptor.ERROR_MESSAGE_ATTR_NAME);
-		if (downloadedFileError instanceof String) {
-			String downloadedFileErrorMessage = (String)downloadedFileError;
-			result.rejectValue("downloadedImage", "fixme", downloadedFileErrorMessage);
-			request.removeAttribute(DownloadImageInterceptor.ERROR_MESSAGE_ATTR_NAME);
+		Object downloadResultErrorCode =
+			request.getAttribute(DownloadImageInterceptor.ERROR_CODE_ATTR_NAME);
+		if (downloadResultErrorCode instanceof String) {
+			String msgCode = (String)downloadResultErrorCode;
+			// Protocol is being validated by @URL, to avoid showing error message twice
+			// we're skipping error from an interceptor
+			if (!msgCode.endsWith(DownloadResult.Code.INVALID_URL.name())
+				&& !msgCode.endsWith(DownloadResult.Code.INVALID_PROTOCOL.name())) {
+				result.rejectValue(
+					DownloadImageInterceptor.IMAGE_FIELD_NAME,
+					msgCode,
+					"Could not download image"
+				);
+			}
+			request.removeAttribute(DownloadImageInterceptor.ERROR_CODE_ATTR_NAME);
 		}
 		
 		if (result.hasErrors()) {
