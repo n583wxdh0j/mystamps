@@ -18,6 +18,7 @@
 package ru.mystamps.web.service.dto;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class DownloadResult {
 	private final String contentType;
 	
 	public static DownloadResult failed(Code code) {
-		return new DownloadResult(code, ArrayUtils.EMPTY_BYTE_ARRAY, "");
+		return new DownloadResult(code, ArrayUtils.EMPTY_BYTE_ARRAY, StringUtils.EMPTY);
 	}
 	
 	public static DownloadResult succeeded(byte[] data, String contentType) {
