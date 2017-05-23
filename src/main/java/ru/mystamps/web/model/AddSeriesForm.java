@@ -59,7 +59,6 @@ import static ru.mystamps.web.validation.ValidationRules.MIN_STAMPS_IN_SERIES;
 @Getter
 @Setter
 // TODO: image and downloadedImage should be filled together
-// TODO: localize URL
 // TODO: disallow urls like http://test
 // TODO: combine price with currency to separate class
 @SuppressWarnings({"PMD.TooManyFields", "PMD.AvoidDuplicateLiterals"})
