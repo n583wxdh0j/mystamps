@@ -40,6 +40,7 @@ import ru.mystamps.web.controller.converter.annotation.Country;
 import ru.mystamps.web.dao.dto.LinkEntityDto;
 import ru.mystamps.web.service.dto.AddSeriesDto;
 import ru.mystamps.web.validation.jsr303.CatalogNumbers;
+import ru.mystamps.web.validation.jsr303.HasImageOrImageUrl;
 import ru.mystamps.web.validation.jsr303.ImageFile;
 import ru.mystamps.web.validation.jsr303.MaxFileSize;
 import ru.mystamps.web.validation.jsr303.MaxFileSize.Unit;
@@ -47,6 +48,7 @@ import ru.mystamps.web.validation.jsr303.NotEmptyFile;
 import ru.mystamps.web.validation.jsr303.NotNullIfFirstField;
 import ru.mystamps.web.validation.jsr303.Price;
 import ru.mystamps.web.validation.jsr303.ReleaseDateIsNotInFuture;
+import ru.mystamps.web.validation.jsr303.RequireImageOrImageUrl;
 
 import static ru.mystamps.web.validation.ValidationRules.MAX_DAYS_IN_MONTH;
 import static ru.mystamps.web.validation.ValidationRules.MAX_IMAGE_SIZE;
@@ -59,9 +61,9 @@ import static ru.mystamps.web.validation.ValidationRules.MIN_STAMPS_IN_SERIES;
 @Getter
 @Setter
 // TODO: image and downloadedImage should be filled together
-// TODO: disallow urls like http://test
 // TODO: combine price with currency to separate class
 @SuppressWarnings({"PMD.TooManyFields", "PMD.AvoidDuplicateLiterals"})
+@RequireImageOrImageUrl
 @NotNullIfFirstField.List({
 	@NotNullIfFirstField(
 		first = "month", second = "year", message = "{month.requires.year}",
@@ -73,7 +75,7 @@ import static ru.mystamps.web.validation.ValidationRules.MIN_STAMPS_IN_SERIES;
 	)
 })
 @ReleaseDateIsNotInFuture(groups = AddSeriesForm.ReleaseDate3Checks.class)
-public class AddSeriesForm implements AddSeriesDto {
+public class AddSeriesForm implements AddSeriesDto, HasImageOrImageUrl {
 	
 	// FIXME: change type to plain Integer
 	@NotNull
@@ -152,11 +154,21 @@ public class AddSeriesForm implements AddSeriesDto {
 	
 	@Override
 	public MultipartFile getImage() {
-		if (image != null && StringUtils.isNotEmpty(image.getOriginalFilename())) {
+		if (hasImage()) {
 			return image;
 		}
 		
 		return downloadedImage;
+	}
+	
+	@Override
+	public boolean hasImage() {
+		return image != null && StringUtils.isNotEmpty(image.getOriginalFilename());
+	}
+	
+	@Override
+	public boolean hasImageUrl() {
+		return StringUtils.isNotEmpty(imageUrl);
 	}
 	
 	@GroupSequence({
