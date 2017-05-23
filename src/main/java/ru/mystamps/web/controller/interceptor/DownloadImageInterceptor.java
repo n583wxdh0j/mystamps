@@ -35,12 +35,31 @@ import lombok.RequiredArgsConstructor;
 import ru.mystamps.web.service.DownloaderService;
 import ru.mystamps.web.service.dto.DownloadResult;
 
-// TODO: javadoc
+/**
+ * Converts image URL to an image by downloading it from a server and binding to a form field.
+ *
+ * It handles only POST requests.
+ */
 @RequiredArgsConstructor
 public class DownloadImageInterceptor extends HandlerInterceptorAdapter {
 	
+	/**
+	 * Field name that contains image URL.
+	 */
 	public static final String URL_PARAMETER_NAME   = "imageUrl";
+	
+	/**
+	 * Field name to which downloaded image will be bound.
+	 */
 	public static final String IMAGE_FIELD_NAME     = "downloadedImage";
+	
+	/**
+	 * Name of request attribute, that will be used for storing an error code.
+	 *
+	 * To check whether error has occurred, you can retrieve this attribute in a controller.
+	 * When it's not {@code null}, it has the code in the format of fully-qualified name
+	 * of the members of the {@link DownloadResult} enum.
+	 */
 	public static final String ERROR_CODE_ATTR_NAME = "DownloadedImage.ErrorCode";
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DownloadImageInterceptor.class);
