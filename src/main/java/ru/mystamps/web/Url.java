@@ -54,13 +54,13 @@ public final class Url {
 	
 	public static final String SUGGEST_SERIES_COUNTRY	= "/suggest/series_country";
 	
-	public static final String ADD_CATEGORY_PAGE     = "/category/add";
-	public static final String LIST_CATEGORIES_PAGE  = "/category/list";
-	public static final String INFO_CATEGORY_PAGE    = "/category/{slug}";
+	public static final String ADD_CATEGORY_PAGE     = "/categories/add";
+	public static final String LIST_CATEGORIES_PAGE  = "/categories/list";
+	public static final String INFO_CATEGORY_PAGE    = "/categories/{slug}";
 	
-	public static final String ADD_COUNTRY_PAGE      = "/country/add";
-	public static final String LIST_COUNTRIES_PAGE   = "/country/list";
-	public static final String INFO_COUNTRY_PAGE     = "/country/{slug}";
+	public static final String ADD_COUNTRY_PAGE      = "/countries/add";
+	public static final String LIST_COUNTRIES_PAGE   = "/countries/list";
+	public static final String INFO_COUNTRY_PAGE     = "/countries/{slug}";
 	
 	public static final String INFO_COLLECTION_PAGE  = "/collection/{slug}";
 	
@@ -73,11 +73,11 @@ public final class Url {
 	
 	// For backward compatibility
 	public static final String ACTIVATE_ACCOUNT_PAGE_WITH_KEY = "/account/activate/key/{key}";
-	public static final String INFO_CATEGORY_BY_ID_PAGE       = "/category/{id}/{slug}";
-	public static final String INFO_COUNTRY_BY_ID_PAGE        = "/country/{id}/{slug}";
+	public static final String INFO_CATEGORY_BY_ID_PAGE       = "/categories/{id}/{slug}";
+	public static final String INFO_COUNTRY_BY_ID_PAGE        = "/countries/{id}/{slug}";
 	public static final String INFO_COLLECTION_BY_ID_PAGE     = "/collection/{id}/{slug}";
-	public static final String ADD_SERIES_WITH_CATEGORY_PAGE  = "/series/add/category/{slug}";
-	public static final String ADD_SERIES_WITH_COUNTRY_PAGE   = "/series/add/country/{slug}";
+	public static final String ADD_SERIES_WITH_CATEGORY_PAGE  = "/series/add/categories/{slug}";
+	public static final String ADD_SERIES_WITH_COUNTRY_PAGE   = "/series/add/countries/{slug}";
 	
 	// MUST be updated when any of our resources were modified
 	public static final String RESOURCES_VERSION      = "v0.3.2";
